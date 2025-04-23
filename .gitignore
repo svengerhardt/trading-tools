@@ -1,0 +1,5 @@
+venv
+__pycache__
+*.pyc
+chart_tools/chart_data.json
+.idea
