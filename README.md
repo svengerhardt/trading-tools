@@ -94,3 +94,21 @@ python chart_plotter.py path/to/your_data.json
 ```
 
 The script automatically selects the first available timeframe and visualizes the combined data.
+
+## Freqtrade Backend Strategy
+
+Testing backend strategy
+
+**Installation**
+
+```
+brew install ta-lib
+pip install freqtrade
+pip install pytest
+```
+
+**Run tests**
+
+```
+pytest test_backend_strategy.py
+```
