@@ -23,7 +23,7 @@ class BackendStrategy(IStrategy):
     trailing_stop = False
 
     # Maximum loss before stopping out
-    stoploss = -0.10
+    stoploss = -0.05
 
     # Trading timeframe
     timeframe = '5m'
@@ -123,14 +123,27 @@ class BackendStrategy(IStrategy):
         if after_fill and trade.enter_tag:
             try:
                 tag_data = json.loads(trade.enter_tag)
-                custom_stoploss = tag_data.get("stoploss")
-                if custom_stoploss is not None:
-                    # Convert stoploss to negative percentage value
-                    return -(custom_stoploss / 100)
+                sl = tag_data.get("stoploss")
+                if sl is not None:
+                    val = float(sl)
+                    # Maximum SL in percent from self.stoploss (e.g. -0.05 -> 5.0)
+                    max_sl_pct = abs(self.stoploss) * 100.0
+                    # Only normalize if val > max_sl_pct
+                    if val > max_sl_pct:
+                        # If decimal places, limit directly to max.
+                        if not val.is_integer():
+                            val = max_sl_pct
+                        else:
+                            # Integer: divide by the appropriate power of 10
+                            digits = len(str(int(val)))
+                            corrected = val / (10 ** (digits - 1))
+                            val = corrected if corrected <= max_sl_pct else max_sl_pct
+                    # Round cleanly to 4 decimal places in percent fractions
+                    stop_pct = round(val / 100.0, 4)
+                    return -stop_pct
             except Exception as e:
                 logger.error(f"Error parsing trade.enter_tag: {e}")
 
-        # If no individual stoploss or not after_fill, then standard
         return None
 
 

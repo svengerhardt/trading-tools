@@ -63,9 +63,44 @@ def test_custom_stoploss_valid_tag(strategy):
     )
     assert result == -0.025
 
+def test_custom_stoploss_invalid(strategy):
+    trade = DummyTrade(enter_tag=json.dumps({"stoploss": 125}))
+    result = strategy.custom_stoploss(
+        pair="BTC/USDT",
+        trade=trade,
+        current_time=datetime.now(),
+        current_rate=10000,
+        current_profit=0.02,
+        after_fill=True
+    )
+    assert result == -0.0125
+
+def test_custom_stoploss_invalid2(strategy):
+    trade = DummyTrade(enter_tag=json.dumps({"stoploss": 10.50}))
+    result = strategy.custom_stoploss(
+        pair="BTC/USDT",
+        trade=trade,
+        current_time=datetime.now(),
+        current_rate=10000,
+        current_profit=0.02,
+        after_fill=True
+    )
+    assert result == -0.05
+
+def test_custom_stoploss_invalid3(strategy):
+    trade = DummyTrade(enter_tag=json.dumps({"stoploss": 750}))
+    result = strategy.custom_stoploss(
+        pair="BTC/USDT",
+        trade=trade,
+        current_time=datetime.now(),
+        current_rate=10000,
+        current_profit=0.02,
+        after_fill=True
+    )
+    assert result == -0.05
+
 def test_custom_stoploss_no_tag_or_not_after_fill(strategy):
     trade = DummyTrade(enter_tag=json.dumps({"stoploss": 2.5}))
-
     result = strategy.custom_stoploss(
         pair="BTC/USDT",
         trade=trade,
